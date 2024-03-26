@@ -1,20 +1,21 @@
 import sqlite3
 import sys
 
-from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QWidget
 
+from UI.ui_main import Ui_MainWindow
+from UI.ui_addEditCoffeeForm import Ui_addEditForm
 
-class CoffeeDBAddEdit(QWidget):
+
+class CoffeeDBAddEdit(QWidget, Ui_addEditForm):
     def __init__(self, main_window):
         super().__init__()
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
         self.main_window = main_window
         self.current_id = 0
-        self.pushButton_Ok.clicked.connect(self._оk)
-        self.pushButton_Cancel.clicked.connect(self._сancel)
-        # self.change_data()
+        self.pushButton_Ok.clicked.connect(self.saveData)
+        self.pushButton_Cancel.clicked.connect(self.noSaveData)
 
     def change_data(self):
         exec_str = 'SELECT * FROM Brands WHERE id = ' + str(self.current_id)
@@ -29,7 +30,7 @@ class CoffeeDBAddEdit(QWidget):
             self.price_box.setValue(element[4])
             self.volume_box.setValue(element[5])
 
-    def _оk(self):
+    def saveData(self):
         sort = self.sort_edit.text()
         degree = self.degree_edit.text()
         ground_or_grains = self.ground_or_grains_box.value()
@@ -62,15 +63,15 @@ class CoffeeDBAddEdit(QWidget):
         self.main_window.select_data()
         self.close()
 
-    def _сancel(self):
+    def noSaveData(self):
         self.close()
 
 
-class CoffeeDB(QMainWindow):
+class CoffeeDB(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
-        self.connection = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.connection = sqlite3.connect("data\coffee.sqlite")
         self.add_edit_form = None
         self.pushButton_SetFilter.clicked.connect(self.select_data)
         self.pushButton_Add.clicked.connect(self.add_item)
